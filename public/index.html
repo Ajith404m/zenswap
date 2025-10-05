@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ZenSwap - Buy, Sell, Exchange, Rent</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="marketplace">
+<!-- Top Header -->
+<header class="top-header">
+  <div class="header-content">
+    <div class="logo">ZenSwap</div>
+    <div class="search-bar">
+      <input id="main-search" type="search" placeholder="Search for items..." />
+    </div>
+    <div id="user-slot" class="header-right"></div>
+  </div>
+</header>
+
+<!-- Category Chips -->
+<div class="category-bar">
+  <div class="category-chips">
+    <button class="chip active" data-category="all">All Categories</button>
+    <button class="chip" data-category="Electronics">📱 Electronics</button>
+    <button class="chip" data-category="Furniture">🛋️ Furniture</button>
+    <button class="chip" data-category="Fashion">👕 Fashion</button>
+    <button class="chip" data-category="Sports">⚽ Sports</button>
+    <button class="chip" data-category="Gaming">🎮 Gaming</button>
+    <button class="chip" data-category="Photography">📷 Photography</button>
+  </div>
+</div>
+
+<!-- Main Content - Listings Feed -->
+<main class="feed-container">
+  <div id="listings" class="listings-feed"></div>
+</main>
+
+<!-- Bottom Navigation -->
+<nav class="bottom-nav">
+  <button class="nav-item active" data-type="all">
+    <span class="nav-icon">🏠</span>
+    <span class="nav-label">All</span>
+  </button>
+  <button class="nav-item" data-type="sell">
+    <span class="nav-icon">🏷️</span>
+    <span class="nav-label">Sell</span>
+  </button>
+  <button class="nav-item" id="create-btn">
+    <span class="nav-icon create-icon">+</span>
+    <span class="nav-label">Create</span>
+  </button>
+  <button class="nav-item" data-type="buy">
+    <span class="nav-icon">🛒</span>
+    <span class="nav-label">Buy</span>
+  </button>
+  <button class="nav-item" data-type="exchange">
+    <span class="nav-icon">🔄</span>
+    <span class="nav-label">Exchange</span>
+  </button>
+  <button class="nav-item" data-type="rent">
+    <span class="nav-icon">📅</span>
+    <span class="nav-label">Rent</span>
+  </button>
+</nav>
+
+<!-- Listing Detail Modal -->
+<div id="detail-modal" class="modal hidden">
+  <div class="modal-content detail-modal-content">
+    <div class="modal-header">
+      <h2>Listing Details</h2>
+      <button class="modal-close" id="detail-close">&times;</button>
+    </div>
+    <div id="detail-content"></div>
+  </div>
+</div>
+
+<!-- Create Listing Modal -->
+<div id="create-modal" class="modal hidden">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Create a Listing</h2>
+      <button class="modal-close" id="modal-close">&times;</button>
+    </div>
+    <p id="auth-hint" class="muted small hidden">You must <a href="/login.html">sign in</a> to publish listings.</p>
+    
+    <!-- Tab Navigation -->
+    <div class="listing-tabs">
+      <button class="tab-btn active" data-tab="sell">🏷️ Sell</button>
+      <button class="tab-btn" data-tab="buy">🛒 Buy</button>
+      <button class="tab-btn" data-tab="exchange">🔄 Exchange</button>
+      <button class="tab-btn" data-tab="rent">📅 Rent</button>
+    </div>
+
+    <!-- Sell Form -->
+    <form id="form-sell" class="listing-form active" data-type="sell">
+      <div class="grid">
+        <label>
+          <span>Title *</span>
+          <input name="title" placeholder="e.g. iPhone 13, 128GB" required />
+        </label>
+        <label>
+          <span>Price *</span>
+          <input name="price" type="number" step="0.01" placeholder="e.g. 399" required />
+        </label>
+        <label>
+          <span>Currency</span>
+          <select name="currency">
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="INR">INR</option>
+            <option value="GBP">GBP</option>
+          </select>
+        </label>
+      </div>
+      <div class="grid">
+        <label>
+          <span>Category *</span>
+          <select name="category" required>
+            <option value="">Select category</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Furniture">Furniture</option>
+            <option value="Clothing">Clothing</option>
+            <option value="Books">Books</option>
+            <option value="Sports">Sports</option>
+            <option value="Gaming">Gaming</option>
+            <option value="Other">Other</option>
+          </select>
+        </label>
+        <label>
+          <span>Condition *</span>
+          <select name="condition" required>
+            <option value="">Select condition</option>
+            <option value="new">New</option>
+            <option value="like new">Like New</option>
+            <option value="good">Good</option>
+            <option value="fair">Fair</option>
+            <option value="poor">Poor</option>
+          </select>
+        </label>
+        <label>
+          <span>Location *</span>
+          <input name="location" placeholder="City, Country" required />
+        </label>
+      </div>
+      <label>
+        <span>Description *</span>
+        <textarea name="description" rows="4" placeholder="Describe your item in detail..." required></textarea>
+      </label>
+      <label>
+        <span>Tags (comma-separated)</span>
+        <input name="tags" placeholder="e.g. iphone, apple, smartphone" />
+      </label>
+      <label>
+        <span>Phone Number (optional)</span>
+        <input name="owner.phone" type="tel" placeholder="+1 234 567 8900" />
+      </label>
+      <div class="image-upload-section">
+        <label>
+          <span>Upload Images (up to 6)</span>
+          <input type="file" name="images" accept="image/*" multiple class="file-input" />
+        </label>
+        <div class="image-preview" id="preview-sell"></div>
+      </div>
+      <div class="actions">
+        <button type="submit" class="primary">Publish Listing</button>
+        <span class="form-status muted"></span>
+      </div>
+    </form>
+
+    <!-- Buy Form -->
+    <form id="form-buy" class="listing-form" data-type="buy">
+      <div class="grid">
+        <label>
+          <span>What are you looking for? *</span>
+          <input name="title" placeholder="e.g. Looking for MacBook Pro" required />
+        </label>
+        <label>
+          <span>Budget (Max Price)</span>
+          <input name="price" type="number" step="0.01" placeholder="e.g. 1000" />
+        </label>
+        <label>
+          <span>Currency</span>
+          <select name="currency">
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="INR">INR</option>
+            <option value="GBP">GBP</option>
+          </select>
+        </label>
+      </div>
+      <div class="grid">
+        <label>
+          <span>Category *</span>
+          <select name="category" required>
+            <option value="">Select category</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Furniture">Furniture</option>
+            <option value="Clothing">Clothing</option>
+            <option value="Books">Books</option>
+            <option value="Sports">Sports</option>
+            <option value="Gaming">Gaming</option>
+            <option value="Other">Other</option>
+          </select>
+        </label>
+        <label>
+          <span>Preferred Condition</span>
+          <select name="condition">
+            <option value="">Any condition</option>
+            <option value="new">New</option>
+            <option value="like new">Like New</option>
+            <option value="good">Good</option>
+            <option value="fair">Fair</option>
+          </select>
+        </label>
+        <label>
+          <span>Location *</span>
+          <input name="location" placeholder="City, Country" required />
+        </label>
+      </div>
+      <label>
+        <span>Requirements & Details *</span>
+        <textarea name="description" rows="4" placeholder="Describe what you're looking for, specifications, etc..." required></textarea>
+      </label>
+      <label>
+        <span>Tags (comma-separated)</span>
+        <input name="tags" placeholder="e.g. macbook, laptop, apple" />
+      </label>
+      <label>
+        <span>Phone Number (optional)</span>
+        <input name="owner.phone" type="tel" placeholder="+1 234 567 8900" />
+      </label>
+      <div class="image-upload-section">
+        <label>
+          <span>Upload Reference Images (optional)</span>
+          <input type="file" name="images" accept="image/*" multiple class="file-input" />
+        </label>
+        <div class="image-preview" id="preview-buy"></div>
+      </div>
+      <div class="actions">
+        <button type="submit" class="primary">Post Buy Request</button>
+        <span class="form-status muted"></span>
+      </div>
+    </form>
+
+    <!-- Exchange Form -->
+    <form id="form-exchange" class="listing-form" data-type="exchange">
+      <div class="grid">
+        <label>
+          <span>What do you have? *</span>
+          <input name="title" placeholder="e.g. Nintendo Switch for PS5" required />
+        </label>
+        <label>
+          <span>Category *</span>
+          <select name="category" required>
+            <option value="">Select category</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Furniture">Furniture</option>
+            <option value="Clothing">Clothing</option>
+            <option value="Books">Books</option>
+            <option value="Sports">Sports</option>
+            <option value="Gaming">Gaming</option>
+            <option value="Other">Other</option>
+          </select>
+        </label>
+        <label>
+          <span>Condition *</span>
+          <select name="condition" required>
+            <option value="">Select condition</option>
+            <option value="new">New</option>
+            <option value="like new">Like New</option>
+            <option value="good">Good</option>
+            <option value="fair">Fair</option>
+          </select>
+        </label>
+      </div>
+      <div class="grid">
+        <label>
+          <span>What do you want in exchange? *</span>
+          <input name="exchangeDesired" placeholder="e.g. PS5 Controller + $100" required />
+        </label>
+        <label>
+          <span>Location *</span>
+          <input name="location" placeholder="City, Country" required />
+        </label>
+        <label>
+          <span>Currency (if cash involved)</span>
+          <select name="currency">
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="INR">INR</option>
+            <option value="GBP">GBP</option>
+          </select>
+        </label>
+      </div>
+      <label>
+        <span>Description *</span>
+        <textarea name="description" rows="4" placeholder="Describe your item and what you're looking to exchange for..." required></textarea>
+      </label>
+      <label>
+        <span>Tags (comma-separated)</span>
+        <input name="tags" placeholder="e.g. nintendo, switch, gaming" />
+      </label>
+      <label>
+        <span>Phone Number (optional)</span>
+        <input name="owner.phone" type="tel" placeholder="+1 234 567 8900" />
+      </label>
+      <div class="image-upload-section">
+        <label>
+          <span>Upload Images of Your Item (up to 6)</span>
+          <input type="file" name="images" accept="image/*" multiple class="file-input" />
+        </label>
+        <div class="image-preview" id="preview-exchange"></div>
+      </div>
+      <div class="actions">
+        <button type="submit" class="primary">Post Exchange</button>
+        <span class="form-status muted"></span>
+      </div>
+    </form>
+
+    <!-- Rent Form -->
+    <form id="form-rent" class="listing-form" data-type="rent">
+      <div class="grid">
+        <label>
+          <span>Item Title *</span>
+          <input name="title" placeholder="e.g. Camera Equipment - Sony A7III" required />
+        </label>
+        <label>
+          <span>Rental Price (per day) *</span>
+          <input name="price" type="number" step="0.01" placeholder="e.g. 50" required />
+        </label>
+        <label>
+          <span>Currency</span>
+          <select name="currency">
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="INR">INR</option>
+            <option value="GBP">GBP</option>
+          </select>
+        </label>
+      </div>
+      <div class="grid">
+        <label>
+          <span>Category *</span>
+          <select name="category" required>
+            <option value="">Select category</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Furniture">Furniture</option>
+            <option value="Sports">Sports</option>
+            <option value="Photography">Photography</option>
+            <option value="Gaming">Gaming</option>
+            <option value="Tools">Tools</option>
+            <option value="Other">Other</option>
+          </select>
+        </label>
+        <label>
+          <span>Condition *</span>
+          <select name="condition" required>
+            <option value="">Select condition</option>
+            <option value="new">New</option>
+            <option value="like new">Like New</option>
+            <option value="excellent">Excellent</option>
+            <option value="good">Good</option>
+          </select>
+        </label>
+        <label>
+          <span>Location *</span>
+          <input name="location" placeholder="City, Country" required />
+        </label>
+      </div>
+      <div class="grid grid-2">
+        <label>
+          <span>Available From *</span>
+          <input name="availability.start" type="date" required />
+        </label>
+        <label>
+          <span>Available Until *</span>
+          <input name="availability.end" type="date" required />
+        </label>
+      </div>
+      <label>
+        <span>Description *</span>
+        <textarea name="description" rows="4" placeholder="Describe the item, rental terms, what's included..." required></textarea>
+      </label>
+      <label>
+        <span>Tags (comma-separated)</span>
+        <input name="tags" placeholder="e.g. camera, sony, photography" />
+      </label>
+      <label>
+        <span>Phone Number (optional)</span>
+        <input name="owner.phone" type="tel" placeholder="+1 234 567 8900" />
+      </label>
+      <div class="image-upload-section">
+        <label>
+          <span>Upload Images (up to 6)</span>
+          <input type="file" name="images" accept="image/*" multiple class="file-input" />
+        </label>
+        <div class="image-preview" id="preview-rent"></div>
+      </div>
+      <div class="actions">
+        <button type="submit" class="primary">Post Rental</button>
+        <span class="form-status muted"></span>
+      </div>
+    </form>
+  </div>
+</div>
+
+<footer class="container muted small">
+  <p>© <span id="year"></span> ZenSwap. MVP demo.</p>
+</footer>
+
+<script src="/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Create account • ZenSwap</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <main class="auth-split">
+    <section class="auth-hero">
+      <div class="auth-hero-inner">
+        <div class="brand">
+          <div class="brand-mark">🚀</div>
+          <div class="brand-name">ZenSwap</div>
+        </div>
+        <h1>Create your account</h1>
+        <p>Join the community to list items and connect with others.</p>
+      </div>
+    </section>
+    <section class="auth-form">
+      <div class="auth-form-inner">
+        <h2>Sign up</h2>
+        <p class="muted">It only takes a minute.</p>
+        <form id="signup-form" class="stack">
+          <label>
+            <span>Name</span>
+            <input name="name" required />
+          </label>
+          <label>
+            <span>Email address</span>
+            <input name="email" type="email" required />
+          </label>
+          <label>
+            <span>Password</span>
+            <input name="password" type="password" required />
+          </label>
+          <div class="actions between">
+            <a class="button" href="/login.html">Sign in</a>
+            <button class="primary" type="submit">Create account</button>
+          </div>
+          <span id="status" class="muted small"></span>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const form = document.getElementById('signup-form');
+    const statusEl = document.getElementById('status');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      statusEl.textContent = 'Creating account...';
+      const data = Object.fromEntries(new FormData(form).entries());
+      try {
+        const res = await fetch('/api/auth/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(json.error || 'Failed');
+        window.location.href = '/';
+      } catch (err) {
+        statusEl.textContent = err.message || 'Error creating account';
+      }
+    });
+  </script>
+</body>
+</html>

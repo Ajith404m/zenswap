@@ -1,0 +1,33 @@
+{
+  "name": "zenswap",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ZenSwap - buy, sell, exchange, and rent marketplace MVP",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "marketplace",
+    "buy",
+    "sell",
+    "exchange",
+    "rent",
+    "zenswap"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.3.1",
+    "express": "^4.19.2",
+    "express-session": "^1.17.3",
+    "fs-extra": "^11.2.0",
+    "mongoose": "^8.19.0",
+    "multer": "^1.4.5-lts.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
